@@ -1,0 +1,212 @@
+#!/bin/bash
+
+##
+## PROFILES PROPERTIES
+##
+
+## >> JAVA
+JAVA_PATH="/usr/lib/jvm"
+if [ -z $JAVA_HOME ]
+then
+    JAVA_HOME="$JAVA_PATH/javahome"
+fi
+SYSTEM_JAVA_HOME="$JAVA_PATH/system-javahome"
+DEFAULT_JAVA6_HOME="$JAVA_PATH/javahome6"
+DEFAULT_JAVA7_HOME="$JAVA_PATH/javahome7"
+DEFAULT_JAVA8_HOME="$JAVA_PATH/javahome8"
+DEFAULT_JAVA11_HOME="$JAVA_PATH/javahome11"
+DEFAULT_JAVA17_HOME="$JAVA_PATH/javahome17"
+
+## >> MAVEN
+MVN_PATH="/home/tjekiel/apps/maven"
+if [ -z $M2_HOME ]
+then
+    M2_HOME="$MVN_PATH/default-maven"
+fi
+DEFAULT_MVN_2="$MVN_PATH/apache-maven-2.2.1"
+DEFAULT_MVN_333="$MVN_PATH/apache-maven-3.3.3"
+DEFAULT_MVN_305="$MVN_PATH/apache-maven-3.0.5"
+DEFAULT_MVN_354="$MVN_PATH/apache-maven-3.5.4"
+DEFAULT_MVN_363="$MVN_PATH/apache-maven-3.6.3"
+
+##
+## END OF PROFILES PROPERIES
+##
+
+DEBUG=1
+# default profile
+COMMAND="java"
+
+function debug {
+    if [ $DEBUG -eq 1 ]
+    then
+        echo "[DEBUG] $@"
+    fi
+}
+
+function list_java {
+    echo ""
+    echo "Available JAVA jdk:"
+    find $JAVA_PATH -maxdepth 1 -type d -iname "jdk*" -exec echo "  - {}" \;
+    echo "Available DEFAULT JAVA jdks - input only number:"
+    find $JAVA_PATH -maxdepth 1 -iname "javahome[0-9]*" -exec echo "  - {}" \;
+    echo ""
+}
+
+function change_java {
+    debug "change_java $0 $1 $2 $3"
+    if [ -z $2 ] || [ "x$3" == "x" ]
+    then
+        echo "Unknown profile"
+        list_java
+        exit 1
+    fi
+    local JDK_SYMLINK=$JAVA_HOME
+    if [ -z $3 ] 
+    then
+        debug "JDK directory was not found. Using $JDK_SYMLINK"
+    else
+        JDK_SYMLINK=$3
+    fi
+    # check if java_home is symlink
+    if [ ! -L $JDK_SYMLINK ]
+    then
+        echo "$JDK_SYMLINK is not a symlink. Aborting $1 change"
+        exit 2
+    fi
+    local NEW_JAVA_HOME=$JDK_SYMLINK
+    case $2 in 
+        "6")
+            echo "Switching to default java 6"
+            NEW_JAVA_HOME=$DEFAULT_JAVA6_HOME
+        ;;
+        "7")
+            echo "Switching to default java 7"
+            NEW_JAVA_HOME=$DEFAULT_JAVA7_HOME
+        ;;
+        "8")
+            echo "Swithing to default java 8"
+            NEW_JAVA_HOME=$DEFAULT_JAVA8_HOME
+        ;;
+        "11")
+            echo "Swithing to default java 11"
+            NEW_JAVA_HOME=$DEFAULT_JAVA11_HOME
+        ;;
+        "17")
+            echo "Swithing to default java 17"
+            NEW_JAVA_HOME=$DEFAULT_JAVA17_HOME
+        ;;
+
+        *)
+            echo "Switching java to version $2"
+            NEW_JAVA_HOME=$2;
+        ;;
+    esac
+
+    debug "Linking $JDK_SYMLINK to $NEW_JAVA_HOME"
+    if [ -e $NEW_JAVA_HOME ]
+    then
+        rm $JDK_SYMLINK;
+        ln -s $NEW_JAVA_HOME $JDK_SYMLINK
+    else 
+        echo "$NEW_JAVA_HOME does not exist, aborting"
+        list_java
+        exit 3
+    fi
+}
+
+function change_maven {
+    debug "change_maven $0 $1 $2"
+    if [ -z $2 ] 
+    then
+        echo "No version was given. Please use version number"
+        echo "Available versions are:"
+        find $MVN_PATH -maxdepth 1 -type d -iname "apache-maven*" -exec echo "  - {}" \;
+        echo ""
+        showHelp
+        exit 1
+    fi
+    if [ ! -L $M2_HOME ]
+    then
+        echo "$M2_HOME is not a symlink. Aborting $1 change"
+        exit 2
+    fi
+    local NEW_M2_HOME=$M2_HOME
+    case $2 in
+        "3.0.5")
+            echo Switching to maven 3.0.5
+            NEW_M2_HOME="$DEFAULT_MVN_305"
+        ;;
+        "3.3.3")
+            echo Switching to maven 3.3.3
+            NEW_M2_HOME="$DEFAULT_MVN_333"
+        ;;
+        "3.5.4")
+            echo Switching to maven 3.5.4
+            NEW_M2_HOME="$DEFAULT_MVN_354"
+        ;;
+        "3.6.3")
+            echo Switching to maven 3.6.3
+            NEW_M2_HOME="$DEFAULT_MVN_363"
+        ;;
+        *)
+            echo "Switching to maven $2 at $MVN_PATH/apache-maven-$2"
+            NEW_M2_HOME="$MVN_PATH/apache-maven-$2"
+        ;;
+    esac
+    
+    debug "Linking $M2_HOME to $NEW_M2_HOME"
+    if [ -e $NEW_M2_HOME ]
+    then
+        rm $M2_HOME
+        ln -s $NEW_M2_HOME $M2_HOME
+    else
+        echo "$NEW_M2_HOME does not exist, aborting"
+        exit 3
+    fi
+}
+
+function showHelp {
+    echo "Usage: switch <command> <option>"
+    echo "Currently available cmds:"
+    echo "  - java"
+    echo "  - system-java"
+    echo "  - maven"
+    echo "Example:"
+    echo "  switch java /usr/share/java-jdk/jdk1.6.0_45"
+    echo "  switch java 6"
+    echo ""
+}
+
+CHANGE=0
+CMD_OPTS=""
+case $1 in
+    "java" )
+    COMMAND="java"
+    CMD_OPTS=$JAVA_HOME
+    CHANGE=1
+    ;;
+
+    "system-java" )
+    COMMAND="java"
+    CMD_OPTS=$SYSTEM_JAVA_HOME
+    CHANGE=1
+    ;;
+
+    "maven" )
+    COMMAND="maven"
+    CHANGE=1
+    ;;
+
+    *)
+    #echo "Unknown command";
+    showHelp
+    ;;
+esac
+
+if [ $CHANGE -eq 1 ]
+then
+    change_$COMMAND $1 $2 $CMD_OPTS
+    exit $?
+fi
+

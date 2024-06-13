@@ -1,0 +1,143 @@
+#!/bin/bash
+
+#####
+#
+# Usage:
+#   worksheet <date> <issue> <duration> <comment>
+#
+#####
+
+##
+## CONSTANTS
+##
+CURRENT_TIME=$(date "+%Y%m%d_%H%M%S")
+WORKLOG_HOME="$HOME/work/worksheet"
+WORKLOG_FILENAME="worklog"
+DEBUG_ENABLED=0
+
+###
+# Loguje wiadomosci na std wyjscie
+###
+function debug {
+    if [ $DEBUG_ENABLED -eq 1 ] 
+    then
+        echo "[DEBUG] $@"
+    fi
+}
+
+###
+# Funkcja iteruje po argumentach i laczy komentarz
+# Zrobione po wuju :P
+# Zwraca: string
+###
+function f_getComment {
+    local loop_count=-1
+    local comment=""
+    for i in $@
+    do
+        loop_count=$(( loop_count + 1 ))
+        if [ $loop_count -lt 3 ]; then
+            continue
+        fi
+        comment="$comment $i"
+    done
+    comment="${comment//\;/@SC@}" # semicolon replacement
+    # comment="$(echo $comment | awk 1 ORS='@NL@')" # newline replacement
+
+    echo $comment
+}
+###
+# show worklog files. Has 3 modes:
+#   1. show last five worklogs (default)
+#   2. show every worklog file
+#   3. show worklogs matching pattern
+# $1 command "more" or date of file to list 
+###
+function f_showWorklogs {
+    ls_cmd="ls -ld $WORKLOG_HOME/worklog* | awk '{print \$9}'"
+    show_last_cmd=" | tail -n 5"
+    show_grep_cmd=" | grep -E \"$1\""
+    if [ "--more" == "$1" ]; then
+        # do nothing
+        echo ""
+    elif [ "x" != "x$1" ]; then
+        ls_cmd="$ls_cmd $show_grep_cmd"
+    else
+        ls_cmd="$ls_cmd $show_last_cmd"
+    fi
+    result=`eval $ls_cmd`
+    if [ "x$result" == "x" ]; then
+        #wykomentowane ze wzgledu na skrypt showWorklog
+        echo ""
+        #echo "No worklogs found matching $1 found"
+        echo ""
+    else
+        echo "$result"
+    fi
+}
+
+###
+# show help dialog
+# @noargs
+###
+function f_display_usage {
+    echo ""
+    echo "worklog usage:"
+    echo "worklog <date> <issue> <duration> <comment>..."
+    echo "  - logs work to file. Parameters:"
+    echo "      * date - log date in format yyyyMMdd"
+    echo "      * issue - work summary, any string"
+    echo "      * duration - time taken [h], decimal format"
+    echo "      * comment - details about work done"
+    echo "worklog show [cmd|pattern]"
+    echo "  - shows worklog file"
+    echo "  - available cmds: --more"
+    echo "  - pattern is used in grep to filter out worklog files. Regexp used: POSIX_EXTENDED"
+    echo ""
+}
+
+##
+## check args
+##
+debug "args 1:[$1] 2:[$2] 3:[$3] 4:[$4]"
+if [ "${#@}" -lt 1 ] || [ $1 == "/?" ]
+then
+    f_display_usage
+    exit 0
+elif [ "x$1" == "xshow" ]
+then
+     f_showWorklogs $2
+    exit 0
+elif [ ${#@} -lt 4 ]
+then
+    echo "Invalid arguments count"
+    exit 1
+elif ! [[ "$1" =~ [0-9]{4}[01][0-9][0-3][0-9] ]]
+then
+    echo "Wrong format in date argument"
+    exit 1
+elif ! [[ "$3" =~ [0-9]+(\.?[0-9]+)? ]]
+then
+    echo "Wrong format in duration "
+    exit 1
+fi
+
+##
+## create worksheet home directory
+##
+if ! [ -d $WORKLOG_HOME ]
+then
+    mkdir $WORKLOG_HOME
+fi
+
+worklog_date=$1
+worklog_issue="$(echo $2 | tr a-z A-Z)"
+worklog_duration=$3
+worklog_comment="$(f_getComment $@)"
+worklog="$CURRENT_TIME;$worklog_date;$worklog_issue;$worklog_duration;$worklog_comment"
+debug "${WORKLOG_FILENAME}.${worklog_date}:"
+debug "$worklog"
+worklog_path="$WORKLOG_HOME/${WORKLOG_FILENAME}.$worklog_date"
+echo "$worklog" >> "$worklog_path"
+echo "Log appended to: $worklog_path"
+exit 0

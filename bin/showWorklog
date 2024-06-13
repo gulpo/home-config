@@ -1,0 +1,7 @@
+#!/bin/bash
+
+for f in $(worklog show $1); do
+    echo "$f";
+    cut -d ";" -f "3,4,5" $f | sort #| sed 's/@SC@/;/g';
+    echo ;
+done;

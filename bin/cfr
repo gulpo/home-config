@@ -1,0 +1,19 @@
+#!/bin/bash
+if [ "x$CFR_HOME" == "x" ] ; then
+    CFR_HOME="/home/tjekiel/apps/java_decompiler/cfr"
+fi
+
+if [ "x$1" == "x/?" ] || [ "x$1" == "x" ] ; then
+    echo "java --jar $CFR_HOME/cfr-latest.jar $1"
+else
+    parameters=
+    it=0
+    for i in $@;
+    do
+        parameters[$it]=$i
+        it=$((it + 1))
+    done;
+    echo "java $CFR_JAVA_OPTS -jar $CFR_HOME/cfr-latest.jar ${parameters[@]}"
+    java $CFR_JAVA_OPTS -jar $CFR_HOME/cfr-latest.jar ${parameters[@]}
+fi
+

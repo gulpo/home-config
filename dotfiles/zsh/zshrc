@@ -1,0 +1,64 @@
+# The following lines were added by compinstall
+
+zstyle ':completion:*' completer _complete _ignored _approximate
+zstyle ':completion:*' insert-unambiguous false
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
+zstyle ':completion:*' matcher-list '' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|[._-:@]=** r:|=**' 'l:|=* r:|=*'
+zstyle ':completion:*' menu select=2
+zstyle ':completion:*' original true
+zstyle ':completion:*' select-prompt '%SScrolling active: current selection at %p%s'
+zstyle :compinstall filename '/home/tjekiel/.zshrc'
+
+autoload -Uz compinit
+compinit
+# End of lines added by compinstall
+# Lines configured by zsh-newuser-install
+HISTFILE=~/.zsh_history
+HISTSIZE=10000
+SAVEHIST=1000
+setopt autocd
+unsetopt beep extendedglob
+bindkey -v
+# End of lines configured by zsh-newuser-install
+
+# historia ctrl+r
+bindkey '^R' history-incremental-search-backward
+
+export TERM="xterm"
+# If this is an xterm set the title to user@host:dir
+case "$TERM" in
+xterm*|rxvt*)
+    PS1="%F{green}%B${debian_chroot:+($debian_chroot)}%n%b%f%F{white}@%f%F{green}%M%f%F{white}:%f%F{yellow}%3~%f%% "
+    PS2="%1_>"
+    ;;
+*)
+    ;;
+esac
+
+setopt interactivecomments
+# sets LS_COLORS env with colors. For more info check `dircolors --print-database`
+eval $(dircolors)
+# common aliases
+alias ll='ls -l'
+alias la='ls -A'
+alias l='ls -CF'
+alias ls='ls --color=auto'
+alias dir='dir --color=auto'
+alias vdir='vdir --color=auto'
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+if [ -f ~/.bash_aliases ]; then
+    source ~/.bash_aliases
+fi
+if [ -f ~/.bash_vars ]; then
+    source ~/.bash_vars
+fi
+
+## HYPER options
+export HYPER_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
+## NodeVersionManager Installation
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

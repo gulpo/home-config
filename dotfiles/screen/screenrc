@@ -1,0 +1,122 @@
+##
+## GNU Screen config file
+## for more info see man page or https://www.gnu.org/software/screen/manual/screen.html
+##
+
+startup_message off
+# Window list at the bottom.
+hardstatus off
+# # hardstatus-desc:  [ hostname ][ ${last windows list} ${current window} ${next windows list} ][ ${current load} ]
+#hardstatus alwayslastline "%{= G}[ %{G}%H ]%{g}[%40= %{y}%-w%{rW}>%{-}%{W}%n %t%{rW}<%{-}%{y}%+w%= %{g}]%{G}[ %{y}Load: %l %{G}]"
+# # hardstatus-desc:  [ hostname ][ ${last windows list} ${current window} ${next windows list} ][ ${current date-time} ]
+hardstatus alwayslastline "%{= G}[ %{G}%H ]%{g}[%= %{= w}%?%-w%?>>%{+b  }%n*%t%?(%u)%?%{-b  }<<%{= w}%?%+w%?%=%{= g}]%?%E%{= g}[%{= G}ESC%{= g}]%?%{= G}[ %{= y}%Y-%m-%d %c %{= G}]"
+caption always "%{= dW}%?%F%{= rW}%:%{+b  }--------%{-b  }%?%45=%{+b  }%n$ %t%{-b  } %?%P%{+b  }%{+  y}[%{+  Y}COPY%{+  y}]%{+  w}%?%?%E%{+b  }%{+  y}[%{+  Y}ESC%{+  y}]%{+  w}%?%=%?%F%:%{+b  }--------%{-b  }%?"
+
+# background for hardstatusline and messages
+sorendition kW # white on black for hardstatus and black on white for messages
+
+# From Stephen Shirley
+# Don't block command output if the terminal stops responding
+# (like if the ssh connection times out for example).
+nonblock on
+
+# Allow editors etc. to restore display on exit
+# rather than leaving existing text in place (useful for vim)
+altscreen on
+
+# Set scrollback buffer for X lines
+defscrollback 10000
+# Trim lines in history buffer
+compacthist on
+# turns on mouse usability in screen by default for new windows
+#defmousetrack on
+# turns on logging for session windows
+#deflog on
+
+# Enable 256-color mode when screen is started with TERM=xterm-256color
+# Taken from: http://frexx.de/xterm-256-notes/
+#
+# Note that TERM != "xterm-256color" within a screen window. Rather it is
+# "screen" or "screen-bce"
+# 
+# terminfo and termcap for nice 256 color terminal
+# allow bold colors - necessary for some reason
+attrcolor b ".I"
+# tell screen how to set colors. AB = background, AF=foreground
+termcapinfo xterm-256color 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'
+
+screen -t temp    0 bash
+screen -t bash    1 bash
+screen -t bash    2 bash
+screen -t bash    3 bash
+screen -t bash    4 bash
+screen -t bash    5 bash
+screen -t bash    97 bash
+screen -t aux     98 bash
+screen -t TOP     99 top
+
+##
+## Layouts
+##
+
+layout new one
+select 2
+
+layout new two
+select 1
+split 
+focus down
+resize -v -5
+select 99
+split -v
+focus right
+select 0
+resize +10
+focus up
+
+layout new three
+select 2
+split
+split -v
+focus down
+select 0
+split -v
+focus right
+select 1
+focus up
+select 3
+focus left
+
+layout prev # select layout 2
+
+# screen automatycznie dostosuje rozmiar okna do wartosci minimalnych
+#focusminsize 150 30
+
+##
+## key bindings
+##
+# move between windows
+#bindkey "^[OR" prev  #F3
+#bindkey "^[OS" next  #F4
+bindkey -k k5 prev # F5
+bindkey -k k6 next # F6
+
+# switch layouts with Ctrl+F3 (prev layout) and Ctrl+F4 (next)
+#bindkey "^[O1;5R" layout prev
+#bindkey "^[O1;5S" layout next
+bindkey -k k3 layout prev #F3
+bindkey -k k4 layout next #F4
+
+# navigating regions with Ctrl-arrows
+bindkey "^[[1;5D" focus left
+bindkey "^[[1;5C" focus right
+bindkey "^[[1;5A" focus up
+bindkey "^[[1;5B" focus down
+bindkey "^[[1;2D" resize -h -1
+bindkey "^[[1;2C" resize -h +1
+bindkey "^[[1;2A" resize -v +1
+bindkey "^[[1;2B" resize -v -1
+# to check keys use $(cat > /dev/null)
+
+# maximum windows
+#maxwin 9

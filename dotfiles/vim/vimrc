@@ -1,0 +1,198 @@
+""""""""""""""""""""""""""""""""""""""""""""""""""
+"" VIMRC
+"" made by Thomas Jekiel
+""
+"" Sources:
+"" https://github.com/tpope/vim-sensible
+"" http://g14n.info/2013/07/my-vim-configuration/
+""""""""""""""""""""""""""""""""""""""""""""""""""
+"
+" MISC
+"
+"# Better command-line completion
+set wildmenu
+"# Show partial commands in the last line of the screen
+set showcmd
+"# Set 'nocompatible' to ward off unexpected things that your distro might
+"# have made, as well as sanely reset options when re-sourcing .vimrc
+set nocompatible
+set pastetoggle=<F12> " przelaczenie trybu wklejania, gdy jest wlaczony autoindent
+
+set ignorecase      " ignore case matching
+set smartcase       " do smart case matching
+set incsearch       " show search matches as you type
+
+" BACKUPS
+set backup
+set backupdir=~/.vim/backup
+set directory=~/.vim/tmp
+
+"
+" INDENTATION
+"
+"# Use auto indentation
+set autoindent
+set smartindent
+set copyindent
+"# Allow backspacing over autoindent, line breaks and start of insert action
+set backspace=indent,eol,start
+"# use space instead of tabs
+set expandtab
+"# Indentation settings for using hard tabs for indent
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set shiftround
+set wrap
+"# scroll to sides with 5 columns left
+set sidescroll=5
+"# scroll with n lines left
+set scrolloff=5
+
+"
+" TABS
+"
+"# open new split panes to bottom right
+set splitbelow
+set splitright
+
+"
+" GFX
+"
+"# Define status line
+function! GitBranch()
+  return system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
+endfunction
+
+function! StatuslineGit()
+  let l:branchname = GitBranch()
+  return strlen(l:branchname) > 0?'  '.l:branchname.' ':''
+endfunction
+
+set statusline=
+"set statusline+=%#PmenuSel#
+"set statusline+=%{GitBranch()}  " display git branch / has display issues 
+"set statusline+=%#LineNr#
+set statusline+=\ %F       "full filepath
+"set statusline+=%t       "tail of the filename
+set statusline+=\ [%{&fileencoding?&fileencoding:&encoding}] "file encoding
+set statusline+=[%{&ff}] "file format
+set statusline+=%h      "help file flag
+set statusline+=%m      "modified flag
+set statusline+=%r      "read only flag
+"set statusline+=%y      "filetype
+set statusline+=%=      "left/right separator
+set statusline+=\ %c,     "cursor column
+set statusline+=\ %l/%L   "cursor line/total lines
+set statusline+=\ %P    "percent through file
+" statusline colors:
+hi StatusLine ctermbg=lightgray ctermfg=darkgray
+" Cmd :hi(ghlight) can set colors for various groups. Use :hi to list all color groups and its attributes
+
+"# line of a window
+set ruler
+if exists('+mouse')
+    "set mouse=a        " Enable use of the mouse for all modes
+    set mouse=vi         " visual, insert
+endif
+
+set hlsearch        " highlight search matches
+set showmatch       " show matching parenthesis
+syntax on           " Syntax highlighting
+"set syntax:whitespace " highlights whitepsaces tabs:green, space:red
+set number          " Line numbers
+set laststatus=2    " Always display the status line, even if only one window is displayed
+" display whitespace characters
+" help listchars
+" format: <char>:<disp_char>[,<char>:<disp_char>]
+set listchars=eol:$,tab:>-,extends:>,precedes:<,trail:~
+set list            " displays extra characters (listchars)
+"set nolist
+
+"
+" COLORS
+"
+colorscheme pablo
+" CURSOR OPTIONS
+if exists('+cursorline')
+    "set cursorcolumn    " zaznaczenie kolumny kursora
+    set cursorline      " zanaczenie wiersza kursora
+    hi cursorline term=bold cterm=bold guibg=DarkGreen
+    hi cursorlinenr ctermbg=darkblue ctermfg=yellow cterm=bold
+endif
+
+"if version >= 703 "niepotrzebne dla nowych wersji
+if exists('+colorcolumn')
+    hi cursorcolumn ctermbg=magenta ctermfg=white cterm=bold
+"    set colorcolumn=200 " pomazanie kolumny 200, wyznaczenie umownego konca linii
+endif
+
+"
+" FILE options
+"
+set fileencodings=ucs-bom,utf-8
+"set nobackup
+"set directory=$TEMP
+set noswapfile " IMPORTANT: comment this line if you are working on a remote host
+set wildignore=*.swp,*.bak,*.pyc,*.class
+
+"
+" HISTORY
+"
+set history=1000    " remember more commands and search history
+"set undolevels=1000 " use many much levels of undo
+
+"
+" FONT
+"
+"set guifont=Hack:h8,Consolas:h9,Fixedsys:h10
+"set guifontwide=Hack:h8,Consolas:h9
+
+"The ps1 syntax file provides syntax folding for script blocks and digital signatures in scripts.
+"When 'foldmethod' is set to 'syntax' then function script blocks will be folded unless you use the following in your .vimrc or before opening a script:
+let g:ps1_nofold_blocks = 1
+let g:ps1_nofold_sig = 1
+"#Note: syntax folding might slow down syntax highlighting significantly, especially for large files.
+
+""
+"" KEY MAPPINGS
+""
+""" set leader key
+let mapleader="\\"
+""" tabs management
+nnoremap <F7> :tabp<CR>
+nnoremap <F8> :tabn<CR>
+nnoremap <C-E> :tabe<CR>
+""" hide/show listchars
+nnoremap <Leader>l :set list!<CR>
+""" hide/show cursor column andline
+nnoremap <Leader>c :set cursorcolumn!<CR>
+nnoremap <Leader>v :set cursorline!<CR>
+nnoremap <Leader>e :set expandtab!<CR>
+""" color column nr 200
+if exists('+colorcolumn')
+    nnoremap <Leader>k :set colorcolumn=200<CR>
+endif
+""" hide/show line numbers
+nnoremap <Leader>n :set number!<CR>
+nnoremap <Leader>t :set expandtab!<CR>
+" SPLIT WINDOW KEYMAPS - left,up,down,right
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
+
+nnoremap <silent> k gk
+nnoremap <silent> j gj
+inoremap <silent> <Up> <C-o>gk
+inoremap <silent> <Down> <C-o>gj
+
+
+""
+"" PROFILED OPTIONS
+""
+" my JavaScript preferences
+"autocmd filetype javascript setlocal autoindent
+"autocmd filetype javascript setlocal expandtab
+"autocmd filetype javascript setlocal shiftwidth=2
+"autocmd filetype javascript setlocal tabstop=2

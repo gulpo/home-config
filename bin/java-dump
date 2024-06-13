@@ -1,0 +1,93 @@
+#!/bin/bash
+
+######
+# Author: tomasz.jekiel
+# Script provides easy interface to create threaddumps and heapdump at the same time.
+# User has to configure it first.
+# Threaddump usage provides 3 dumps in 20 seconds intervals.
+#
+# usage:
+#   java-dump {t|h} [heapArgs]
+# commands:
+#   t - thread dump
+#   h - heap dump
+# arguments:
+#   heapArgs - arguments that will be passed to a heapdump command
+#
+# configuration:
+#   UNIQUE_APP_ID - unique text string that will designate a java process
+#   DEF_HEAPDUMP_FILE - path for heapdump output
+######
+
+UNIQUE_APP_ID="/app/jira"
+JAVA_PID="$(ps aux | grep java | grep $UNIQUE_APP_ID | awk '{print $2}')"
+DEF_HEAPDUMP_FILE="jHeapDump.bin"
+
+function f_threadDump() {
+    echo "Issueing thread dumps"
+    it=0
+    while [ $it -lt 3 ] ; do
+        it=$(expr $it + 1)
+        kill -3 $JAVA_PID
+        echo "$it dump is down"
+        if [ $it -lt 2 ]; then
+            sleep 20
+        fi
+    done
+    echo "All dumps are down and you are good to go sir/miss."
+    echo "Check application std-out log files for more information"
+}
+
+function f_heapDump() {
+    cmd="$(which jmap)"
+    if [ -z $cmd ]; then
+        echo "Jmap cmd was not found. Is java ok?"
+        return 1
+    fi
+    outFile=$DEF_HEAPDUMP_FILE
+    if [ "x$2" != "x" ]; then
+        outFile="$2"
+    fi
+    eval $cmd -dump:format=b,file="$outFile" $JAVA_PID
+}
+
+function f_showHelp() {
+    echo "Usage:"
+    echo "    java-dump (t | h [FILE])"
+    echo "Options:"
+    echo "    t - threadump - issues 3 consecutive thread dumps with 30s dealy between each"
+    echo "    h - heapdump - issues heapdump with default output to $DEF_HEAPDUMP_FILE or given file as 2nd parameter"
+}
+
+
+########
+# MAIN #
+########
+
+
+case $1 in
+    "t")
+        run_f="f_threadDump"
+    ;;
+
+    "h")
+        run_f="f_heapDump"
+        run_f_args="$2"
+    ;;
+
+    *)
+        echo "Dump mode was not given or unrecognized"
+        run_f="f_showHelp"
+
+esac
+
+if [ -z $JAVA_PID ]; then
+	echo "Application java process was not found"
+else
+    echo "Found operational java pid $JAVA_PID"
+    if [ ! -z $run_f ]; then
+        eval $run_f "$run_f_args"
+    fi
+fi
+
+

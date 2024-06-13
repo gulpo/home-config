@@ -1,0 +1,70 @@
+#!/bin/bash
+
+export GIT_EDITOR="vim"
+
+##
+## JAVA
+##
+JAVA_HOME="/usr/lib/jvm/javahome"
+export JAVA_HOME
+
+##
+## MAVEN
+##
+M2="/usr/lib/maven/default-maven/bin"
+M2_HOME="/usr/lib/maven/default-maven"
+MAVEN_OPTS="-Xmx512m -Xms512m " ## -XX:MaxPermSize=256m
+export M2
+export M2_HOME
+export MAVEN_OPTS
+
+##
+## Kubernetes
+##
+export KUBECONFIG=$HOME/.kube/private.config:$HOME/.kube/config
+
+##
+## PHP
+##
+export PATH="$PATH:$HOME/.symfony5/bin/"
+
+##
+## PYTHON
+##
+#PYTHONHOME="/usr/local/lib/python2.7:/usr/local/lib/python2.7" # syntax: ${PREFIX}:${EXEC_PREFIX}
+#if [ -z $PYTHONPATH ]; then
+#    PYTHONPATH="/home/tjekiel/.local/lib/python"
+#else
+#
+#elif
+#PYTHONOPTIMIZE="1" # int can be higher
+#PYTHONDEBUG="1" # int can be higher
+
+#export PYENV_VIRTUALENV_DISABLE_PROMPT=1 # for pyenv to change prompt
+#export PYENV_ROOT="$HOME/.pyenv"
+#command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+#eval "$(pyenv init -)"
+
+
+##
+## DOCKER / COMPOSE
+##
+export COMPOSE_DOCKER_CLI_BUILD=1
+export DOCKER_BUILDKIT=1
+## ORACLE
+##
+export LD_LIBRARY_PATH="/opt/oracle/instantclient_12_2:$LD_LIBRARY_PATH"
+export ORACLE_HOME="/opt/oracle"
+##
+## PATH
+##
+export PATH="$PATH:$JAVA_HOME/bin:$M2:$ORACLE_HOME:$HOME/.local/bin:/snap/bin"
+
+##
+## PROXY 
+##
+#http_proxy=
+#https_proxy
+#ftp_proxy=
+#no_proxy=localhost,192.168.0.1
+

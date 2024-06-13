@@ -1,0 +1,6 @@
+#!/bin/bash
+tmux new-session \; \
+  split-window -v 'top' \; \
+  split-window -h \; \
+  resizep -y 14 \; \
+  resizep -x 130 ;

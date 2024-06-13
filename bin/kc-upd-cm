@@ -1,0 +1,14 @@
+#!/bin/bash
+
+CM_NAME=$1
+FILE_NAME=$2
+NAMESPACE=$3
+
+if [ -z $1 ] || [ -z $2 ] || [ -z $3 ]; then
+    echo "Bad usage"
+    echo "Usage: kc-upd-cm <config_map_name> <confi_file_yaml> <namespace>"
+    echo "Proposed command: $ kubectl create configmap $1 --from-file=$2 -n $3 -o yaml --dry-run=client | kubectl apply -f -"
+    exit
+fi
+
+kubectl create configmap $1 --from-file=$2 -n $3 -o yaml --dry-run=client | kubectl apply -f -

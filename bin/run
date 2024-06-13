@@ -1,0 +1,208 @@
+#!/bin/bash
+
+##
+## function to run
+##
+LOGS_PATH=$HOME/logs
+CURRENT_PATH=$(pwd)
+DEBUG_ENABLED=true
+
+##
+## apps versions
+##
+MAT_VER="1.8.0"
+TDA_VER="2.2"
+
+. $HOME/bin/lib/util.sh
+
+#function run_jxplorer {
+#    app_home="$HOME/apps/jxplorer"
+#    cd "$app_home"
+#    nohup $app_home/jxplorer.sh > $LOGS_PATH/run.jxplorer.log 2>&1 & #$LOGS_PATH/run.jxplorer.error.log &
+#}
+
+function run_samurai {
+    app_fullpath="$HOME/apps/samurai.jar"
+    JAVA_OPTS="$JAVA_OPTS -Xms3072m -Xmx3072m "
+    JAVA_OPTS="$JAVA_OPTS -XX:+CMSClassUnloadingEnabled -XX:PermSize=512m -XX:MaxPermSize=512m"
+    JAVA_OPTS="$JAVA_OPTS -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:+UseCompressedOops"
+    JAVA_OPTS="$JAVA_OPTS -XX:ConcGCThreads=4 -XX:ParallelGCThreads=4 -XX:+CMSScavengeBeforeRemark"
+    nohup java $JAVA_OPTS -jar $app_fullpath > $LOGS_PATH/run.samurai.log 2>&1 & # $LOGS_PATH/run.samurai.error.log &
+}
+
+function run_mat {
+    app_fullpath="$HOME/apps/mat-$MAT_VER/MemoryAnalyzer"
+    nohup $app_fullpath > $LOGS_PATH/run.mat.log 2>&1 &
+}
+
+function run_tda {
+    app_fullpath="$HOME/apps/tda-$TDA_VER/tda.jar"
+    nohup java -Xms3072m -Xmx3072m -XX:MaxPermSize=256m -jar $app_fullpath > $LOGS_PATH/run.tda.log 2>&1 & # $LOGS_PATH/run.tda.error.log &
+}
+function run_pgnig-vpn {
+    app_path="$HOME/work/projects/pgnig/tools/"
+    nohup javaws $app_path/agclient.jnlp > $LOGS_PATH/run.agclient.log 2>&1 &
+}
+
+function run_sqldeveloper {
+    sqldeveloperPath="$HOME/apps/sqldeveloper"
+    cd "$sqldeveloperPath"
+    nohup ./sqldeveloper.sh > $LOGS_PATH/run.sqldeveloper.log 2>&1 & # $LOGS_PATH/run.sqldeveloper.error.log &
+}
+
+function run_eclipse {
+    local eclipse_parent="$HOME/apps/"
+    local eclipse_4_4="eclipse-4.4"
+    local eclipse_4_5="eclipse-4.6.2"
+    local eclipse_4_7="eclipse-oxygen"
+    local eclipse='eclipse'
+    local runnable="$eclipse_4_7"
+    case $1 in
+        "4.5")
+            runnable="$eclipse_4_5"
+        ;;
+        "4.7")
+            runnable="$eclipse_4_7"
+        ;;
+        "4.8")
+            runnable="eclipse-photon"
+        ;;
+        "4.9")
+            runnable="eclipse-simrel"
+        ;;
+        *)
+            echo "Unknown version given [$1]. Using default"
+            runnable="$eclipse"
+        ;;
+    esac
+    logDebug "running eclipse $1"
+    export SWT_GTK3=0
+    nohup $eclipse_parent/$runnable/eclipse  >> $LOGS_PATH/run.eclipse.log 2>&1 & # $LOGS_PATH/run.eclipse.error.log &
+}
+
+function run_office {
+    OFFICE_APP="libreoffice"
+    logDebug "Running office: ${OFFICE_APP} $@"
+    $(nohup ${OFFICE_APP} $@ ) >> $LOGS_PATH/run.${OFFICE_APP}.log 2>&1 &
+}
+
+function run_chrome {
+    #nohup google-chrome --proxy-server="http://w3cache.amg.net.pl:8080" --use-spdy=off  > $LOGS_PATH/run.google-chrome.log 2>&1 & # $LOGS_PATH/run.google-chrome.error.log &
+    nohup google-chrome --disable-http2 > $LOGS_PATH/run.google-chrome.log 2>&1 &
+}
+
+function run_chrome-noproxy {
+    nohup google-chrome --no-proxy-server --disable-http2 > $LOGS_PATH/run.google-chrome.log 2>&1 & # $LOGS_PATH/run.google-chrome.error.log &
+}
+
+function run_firefox {
+    nohup firefox > $LOGS_PATH/run.firefox.log 2>&1 & # $LOGS_PATH/run.firefox.error.log &
+}
+
+function run_mail-client {
+    nohup evolution  > $LOGS_PATH/run.evolution.log 2>&1 & # $LOGS_PATH/run.thunderbird.error.log &
+}
+
+function run_mail-client-thunderbird {
+    nohup thunderbird  > $LOGS_PATH/run.thunderbird.log 2>&1 & # $LOGS_PATH/run.thunderbird.error.log &
+}
+
+function run_gnome-terminal {
+    nohup gnome-terminal  > $LOGS_PATH/run.gnome-terminal.log 2>&1 & # $LOGS_PATH/run.gnome-terminal.error.log &
+}
+
+function run_soapui {
+    nohup $HOME/apps/SoapUI-5.5.0/bin/soapui.sh > $LOGS_PATH/run.soapui.log 2>&1 & # $LOGS_PATH/run.soapui.error.log &
+}
+
+function run_audacious {
+    nohup /usr/bin/audacious > $LOGS_PATH/run.audacious.log 2>&1 &
+}
+
+function run_pdfreader {
+    nohup evince $@ > $LOGS_PATH/run.pdfreader.log 2>&1 &
+}
+
+function run_pdfviewer {
+    nohup evince $@ > $LOGS_PATH/run.pdfreader.log 2>&1 &
+}
+
+function showHelp {
+    echo "Easy run Script"
+    echo "    Script that starts apps"
+    echo "    Implemented apps:"
+    echo "        - sqldeveloper"
+    echo "        - eclipse"
+    echo "        - chrome[-noproxy]"
+    echo "        - firefox"
+    echo "        - soapui"
+    echo "        - audacious"
+    echo "        - mail-client"
+    echo "        - gnome-terminal"
+    echo "        - office"
+    echo "        - pdfreader"
+    echo "    Arguments:"
+    echo "        \"-p <program_name>\" - select program to run"
+    echo "        \"-a '<arguments>'\" - additional arguments"
+    echo "    usage example:"
+    echo "        run -p track -a \"nohup\""
+}
+##
+## inicjalizacja zmiennych
+##
+
+previousP=0
+previousA=0
+funcToRun="run_"
+funcArgs=""
+dontRun=0
+for arg in "$@"
+do
+    case $arg in 
+        "-p" )
+        previousP=1
+        ;;
+        "-a" )
+        previousA=1
+        ;;
+        "help" )
+            showHelp
+            dontRun=1
+            exit 1
+        ;;
+        "/?" )
+            showHelp
+            dontRun=1
+            exit 1
+        ;;
+        *)
+            if [ $previousP -eq 0 ] && [ $previousA -eq 0 ]
+            then 
+                echo "Unrecognized argument(s): $arg"
+                exit 0
+            fi
+            if [ $previousP -eq 1 ]
+            then 
+                funcToRun="${funcToRun}${arg}"
+            fi
+            previousP=0
+            if [ $previousA -eq 1 ]
+            then 
+                funcArgs="${funcArgs} ${arg}"
+            fi
+            previousA=0
+        ;;
+    esac
+done
+
+# przejscie do katalogu logow, aby np. nohup.log tylko tam sie pojawial, a nie tworzyl smieci gdzie popadnie
+cd "$LOGS_PATH"
+
+if [ "$funcToRun" != "run_" ] && [ $dontRun -eq 0 ]
+then
+    eval $funcToRun $funcArgs
+fi
+
+# ustawienie sciezki w momencie uruchamiania programu
+cd "$CURRENT_PATH"
+

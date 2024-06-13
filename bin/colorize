@@ -1,0 +1,149 @@
+#!/usr/bin/perl
+#
+# Quick-n-dirty ATG Dynamo log colorizer
+# by alder@amg.net.pl
+#
+# Copyright (c) 2001, AMG.net
+# http://www.amg.net.pl
+#
+# $Id: colorize,v 1.1.1.1 2001/09/29 11:07:48 alder Exp $
+#
+# This small script colorizes the output of ATG Dynamo
+# Appliacation Server. Different logging channels can
+# have different colors. Names of Nucleus components are
+# bold and the method delimiter '->' is marked red.
+#
+# To configure, change the 'Color configuration' section 
+# below.
+#
+# Free to use as long this copyright message is preserved ;-)
+#
+# Usage:
+#
+# 	bin/startDynamo -m YourModules | /path/to/colorizer [-d] [-p]
+#
+#	Optional space-saving switches:
+#
+#	-d	cuts the long date/time/serial string, which is
+#		usually not necessary during development, but
+#               takes up a lot of screen space
+#
+#       -p	cuts the "**** prefix" (the line is colorized,
+#		based on that prefix, so you can distinguish
+#               types of lines without the prefix)
+#
+#---------------------------------------------------------------------
+
+#
+# Color definitions (shell escape codes)
+#
+use constant RED	=> 31;
+use constant GREEN	=> 32;
+use constant YELLOW	=> 33;
+use constant BLUE	=> 34;
+use constant CYAN	=> 35;
+use constant MAGENTA    => 36;
+use constant WHITE	=> 37;
+
+use constant RESET	=> 0;
+use constant REVERSE	=> 7;
+use constant STRONG	=> 1;
+
+#
+# Color configuration
+#
+use constant INFO	=> WHITE;
+use constant ERROR	=> RED;
+use constant DEBUG	=> GREEN;
+use constant WARN	=> CYAN;
+use constant SYSTEM	=> YELLOW;
+use constant ENV	=> YELLOW;
+
+#
+# Mr. Colorizer itself 
+#
+$| = 1;
+
+use vars qw ( $current $cut_date $cut_prefix );
+
+while (my $sw = shift) {
+    if ($sw eq '-d') {
+        $cut_date = 1;
+    } elsif ($sw eq '-p') {
+    	$cut_prefix = 1;
+    }
+}
+
+while(<>) {
+   chomp;
+
+   # dynamo logging
+   if    (s/^(\Q**** info\E\s+)/prefix($1)/e)  { printc(INFO); }
+   elsif (s/^(\Q**** Error\E\s+)/prefix($1)/e) { printc(ERROR); }
+   elsif (s/^(\Q**** debug\E\s+)/prefix($1)/e) { printc(DEBUG); }
+   elsif (s/^(\Q**** warn\E\s+)/prefix($1)/e)  { printc(WARN); }
+
+   # common messages
+   elsif (/error/i) { printc(ERROR); }
+   elsif (/debug/i) { printc(DEBUG); } 
+   elsif (/warn/i) { printc(WARN); } 
+ 
+   elsif (/^.+Could not.+$/) { printc(WARN); }   
+
+   # volantis 
+   elsif (/volantis/i) { printc(YELLOW); }
+   
+   # system messages
+   elsif ( /^Nucleus running/) { printc(SYSTEM); printc(REVERSE); }
+   
+   elsif (/^Service / || /^[jJ]ava/) { printc(SYSTEM); }
+
+   # environment vars
+   elsif ( /^[A-Z_]+:/ ) { printc(ENV); }
+
+   # debug info - highlight
+   s/^(DEBUG.+java\:.+?\)\s+-\s+)(.+)$/$1 . strong($2)/ge;
+
+   # error all - highlight
+   s/^(ERROR.+)$/strong($1)/ge;
+   
+   # component names - highlight
+   s/(\s)(\/[\w\/-]+)(\s)/$1 . strong($2) . $3/ge;
+
+   # method delimiter - red + highlight
+   s/->/join('', color(RED),color(STRONG),'->', color(RESET), color($current))/ge;
+
+   # cut the datetime
+   if ($cut_date) {
+   	s/\w{3}\ \w{3}\ \d{2}\ \d{2}:\d{2}:\d{2}(\ \w{3}\+\d{2}:\d{2})?\ \d{4}\s+\d{13}\s+//;
+   }
+
+   print;
+   printc();
+   print "\n";
+}
+
+sub prefix {
+    if ($cut_prefix) {
+    	return undef;
+    } else {
+    	return shift;
+    }
+}
+
+
+sub printc {
+    my $col = shift || RESET;
+    $current = $col;
+    print color($col);
+}
+
+sub color {
+    my $col = shift;
+    return "\e[${col}m";
+}
+
+sub strong {
+    my $text = shift;
+    return join('', color(STRONG), $text, color(RESET), color($current));
+}
