@@ -19,20 +19,30 @@ HISTSIZE=10000
 SAVEHIST=1000
 setopt autocd
 unsetopt beep extendedglob
-bindkey -v
+# vi mode in zsh
+#bindkey -v
 # End of lines configured by zsh-newuser-install
 
 # historia ctrl+r
 bindkey '^R' history-incremental-search-backward
 
 export TERM="xterm"
+ps1_git() {
+    PS1_GIT=$(git symbolic-ref --short -q HEAD || git rev-parse -q --short HEAD 2> /dev/null)
+    if [[ "x$PS1_GIT" == "x" ]]; then
+        echo ""
+    else
+        echo " ($PS1_GIT) "
+    fi
+}
 # If this is an xterm set the title to user@host:dir
+# $(git branch --show-current 2>/dev/null)
 case "$TERM" in
 xterm*|rxvt*)
-    PS1="%F{green}%B${debian_chroot:+($debian_chroot)}%n%b%f%F{white}@%f%F{green}%M%f%F{white}:%f%F{yellow}%3~%f%% "
-    PS2="%1_>"
+    PS1="%F{green}%B${debian_chroot:+($debian_chroot)}%n%b%f%F{white}@%f%F{green}%M%f%F{white}:%f%F{yellow}%3~%f$(ps1_git)%% "
+    PS2="%1>"
     ;;
-*)
+*)i
     ;;
 esac
 
