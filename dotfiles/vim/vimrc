@@ -112,7 +112,7 @@ set list            " displays extra characters (listchars)
 "
 " COLORS
 "
-colorscheme pablo
+colorscheme desert
 " CURSOR OPTIONS
 if exists('+cursorline')
     "set cursorcolumn    " zaznaczenie kolumny kursora

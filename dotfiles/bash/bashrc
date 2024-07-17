@@ -128,7 +128,15 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+## fzf integration
+# Set up fzf key bindings and fuzzy completion
+if [[ $(which fzf) ]]; then
+    [ -e $HOME/.fzf.completion.bash ] && source $HOME/.fzf.completion.bash
+    [ -e $HOME/.fzf.key-bindings.bash ] && source $HOME/.fzf.key-bindings.bash
+    #eval "$(fzf --bash)" # only for version 0.48.0+
+fi
 
+## node version manager integration
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
