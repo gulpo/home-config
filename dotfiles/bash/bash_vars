@@ -1,5 +1,6 @@
 #!/bin/bash
 
+export EDITOR="vi"
 export GIT_EDITOR="vim"
 
 ##
@@ -17,6 +18,11 @@ MAVEN_OPTS="-Xmx512m -Xms512m " ## -XX:MaxPermSize=256m
 export M2
 export M2_HOME
 export MAVEN_OPTS
+
+##
+## Android
+##
+export ANDROID_HOME="$HOME/Android/Sdk"
 
 ##
 ## Kubernetes
