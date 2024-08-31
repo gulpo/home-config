@@ -3,4 +3,5 @@ tmux new-session \; \
   split-window -v 'top' \; \
   split-window -h \; \
   resizep -y 14 \; \
-  resizep -x 130 ;
+  resizep -x 130 \; \
+  select-pane -U \; ;

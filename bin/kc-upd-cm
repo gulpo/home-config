@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#
+# Kubernetes kubectl tool to easily create a configmap from a yaml file
+#
+
 CM_NAME=$1
 FILE_NAME=$2
 NAMESPACE=$3
