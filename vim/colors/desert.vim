@@ -62,7 +62,7 @@ hi WarningMsg guifg=#cd5c5c guibg=NONE gui=bold cterm=bold
 hi MoreMsg guifg=#9acd32 guibg=NONE gui=bold cterm=bold
 hi Question guifg=#89fb98 guibg=NONE gui=bold cterm=bold
 hi Todo guifg=#ff0000 guibg=#eeee00 gui=NONE cterm=NONE
-hi MatchParen guifg=#7f7f8c guibg=#bdb76b gui=NONE cterm=NONE
+hi MatchParen guifg=#7f7f8c guibg=#bdb76b gui=NONE cterm=NONE ctermfg=4 ctermbg=1
 hi Search guifg=#f0e68c guibg=#7f7f8c gui=NONE cterm=NONE
 hi IncSearch guifg=#f0e68c guibg=#cd853f gui=NONE cterm=NONE
 hi WildMenu guifg=#333333 guibg=#eeee00 gui=NONE cterm=NONE
