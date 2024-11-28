@@ -83,7 +83,7 @@ fi
 ## fzf integration
 # Set up fzf key bindings and fuzzy completion
 #[[ $(which fzf) ]] && source ~/fzf-zsh-completion.sh && ~/.fzf.key-bindings.zsh
-# source <(fzf --zsh) # since fzf version 0.48.0
+ source <(fzf --zsh) # since fzf version 0.48.0
 ## NodeVersionManager Installation
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
