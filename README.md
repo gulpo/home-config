@@ -1,5 +1,21 @@
 # Home laptop configuration repo
 
+## TO-DOs
+
+[] add top configuration dotfile
+[] add tools readme doc
+
+## Dotfiles configurations
+
+- bash
+- zsh
+- fzf
+- kitty
+- screen (archived)
+- tmux
+- tmux_battery
+- vim
+
 ## installation needs
 
 - bat - better cat [https://github.com/sharkdp/bat]
