@@ -2,7 +2,7 @@
 
 zstyle ':completion:*' completer _complete _ignored _approximate
 zstyle ':completion:*' insert-unambiguous false
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+#zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
 zstyle ':completion:*' matcher-list '' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|[._-:@]=** r:|=**' 'l:|=* r:|=*'
 zstyle ':completion:*' menu select=2
@@ -26,9 +26,15 @@ unsetopt beep extendedglob
 # historia ctrl+r
 bindkey '^R' history-incremental-search-backward
 
-export TERM="xterm"
+export TERM="xterm-256color"
+
+##
+## PROMPT config
+##
+setopt prompt_subst
+
 ps1_git() {
-    PS1_GIT=$(git symbolic-ref --short -q HEAD || git rev-parse -q --short HEAD 2> /dev/null)
+    PS1_GIT=$(git symbolic-ref --short -q HEAD 2> /dev/null || git rev-parse -q --short HEAD 2> /dev/null)
     if [[ "x$PS1_GIT" == "x" ]]; then
         echo ""
     else
@@ -39,16 +45,24 @@ ps1_git() {
 # $(git branch --show-current 2>/dev/null)
 case "$TERM" in
 xterm*|rxvt*)
-    PS1="%F{green}%B${debian_chroot:+($debian_chroot)}%n%b%f%F{white}@%f%F{green}%M%f%F{white}:%f%F{yellow}%3~%f$(ps1_git)%% "
+    PS1="%F{green}%B${debian_chroot:+($debian_chroot)}%n%b%f%F{white}@%f%F{green}%M%f%F{white}:%f%F{blue}%3~%f$(ps1_git)
+%% "
     PS2="%1>"
     ;;
 *)i
     ;;
 esac
 
+
 setopt interactivecomments
 # sets LS_COLORS env with colors. For more info check `dircolors --print-database`
-eval $(dircolors)
+if whence dircolors > /dev/null; then
+    eval $(dircolors)
+else
+    export CLICOLOR=1
+#    zstyle ':completion:*:default' list-color ''
+fi
+
 # common aliases
 alias ll='ls -l'
 alias la='ls -A'
@@ -59,18 +73,16 @@ alias vdir='vdir --color=auto'
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
-if [ -f ~/.bash_aliases ]; then
-    source ~/.bash_aliases
+if [ -f ~/.zsh_aliases ]; then
+    source ~/.zsh_aliases
 fi
-if [ -f ~/.bash_vars ]; then
-    source ~/.bash_vars
+if [ -f ~/.zsh_vars ]; then
+    source ~/.zsh_vars
 fi
 
-## HYPER options
-export HYPER_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
 ## fzf integration
 # Set up fzf key bindings and fuzzy completion
-[[ $(which fzf) ]] && source ~/.fzf.completion.zsh && ~/.fzf.key-bindings.zsh
+#[[ $(which fzf) ]] && source ~/fzf-zsh-completion.sh && ~/.fzf.key-bindings.zsh
 # source <(fzf --zsh) # since fzf version 0.48.0
 ## NodeVersionManager Installation
 export NVM_DIR="$HOME/.nvm"

@@ -1,0 +1,60 @@
+#!/bin/bash
+# utworzenie alias do najczesciej wykonywanych operacji
+#alias :q="exit"
+#alias :q!="exit"
+
+
+alias Grep="grep"
+alias GREP="grep"
+#alias bat='batcat --theme base16 --tabs 4'
+
+## Maven ##
+alias m8="JAVA_HOME=/usr/lib/jvm/javahome8 && mvn"
+alias m11="JAVA_HOME=/usr/lib/jvm/javahome11 && mvn"
+alias m17="JAVA_HOME=/usr/lib/jvm/javahome17 && mvn"
+alias mci="mvn clean install"
+alias mcist="mvn clean install -DskipTests"
+alias mcp="mvn clean package"
+alias mcp8="JAVA_HOME=/usr/lib/jvm/javahome8 && mvn clean package"
+alias mcp11="JAVA_HOME=/usr/lib/jvm/javahome11 && mvn clean package"
+alias mcp17="JAVA_HOME=/usr/lib/jvm/javahome17 && mvn clean package"
+
+## Kubernetes ##
+alias k="kubectl"
+alias mk="minikube"
+alias mkk="minikube kubectl"
+alias kc="kubectl config"
+alias kcgc="kubectl config get-contexts"
+alias kcuc="kubectl config use-context"
+alias kg="kubectl get"
+alias kl="kubectl logs"
+alias kd="kubectl describe"
+
+alias ftp="ftp -vp "
+alias cpv='rsync -ah --info=progress2'
+alias ip='ip -c'
+alias smtp-server="python3 -m smtpd -n -c DebuggingServer localhost:1025"
+## DIR CHANGE
+alias pud='pushd'
+alias pod='popd'
+## DOCKER
+alias d='docker'
+alias di='docker images'
+alias dn='docker network'
+alias dc='dockeracompose'
+
+#alias fix-ssh-agent="export SSH_AUTH_SOCK=\"$(find /tmp/ssh* -iname 'agent.*')\" && export SSH_AGENT_PID=\"$(ps aux |grep ssh-agent | grep -v grep | awk '{print $2}')\" "
+alias sa='ssh-add'
+
+alias git-graph-oneline='git log --graph --decorate --all --oneline'
+alias git-graph='git log --graph --decorate --all'
+
+#######################################
+###               4FUN              ###
+#######################################
+
+# cowsay expried on brew due to archived upstream repository
+#alias cdate='date | cowsay -T VV' #needs cowsay pkg
+#alias ddate='date | cowsay -f /usr/share/cowsay/cows/daemon.cow'
+alias weather='curl wttr.in'
+
