@@ -2,7 +2,7 @@
 
 ## TO-DOs
 
-[] add top configuration dotfile
+[/] add top configuration dotfile
 [] add tools readme doc
 
 ## Dotfiles configurations
@@ -15,6 +15,7 @@
 - tmux
 - tmux_battery
 - vim
+- top
 
 ## installation needs
 
@@ -23,6 +24,6 @@
 - nvm - node version manager [https://github.com/nvm-sh/nvm]
 - android sdk - android development kit [https://developer.android.com/studio] - install android studio and rip off sdk from there
 - zip - apt install zip
-- kando - a gui shortcut manager 
+- kando - a gui shortcut manager
         https://github.com/kando-menu/kando/blob/main/docs/installing.md
         https://github.com/kando-menu/gnome-shell-integration/ # use for gnome integration
